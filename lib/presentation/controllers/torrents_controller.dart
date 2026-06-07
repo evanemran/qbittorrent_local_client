@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/error/failures.dart';
+import '../../../core/services/download_notification_service.dart';
 import '../../../domain/entities/torrent.dart';
 import '../../../domain/entities/torrent_filter.dart';
 import '../../../domain/usecases/clear_server_config.dart';
@@ -21,13 +22,15 @@ class TorrentsController extends GetxController {
     required DeleteTorrents deleteTorrents,
     required Logout logout,
     required ClearServerConfig clearServerConfig,
+    required DownloadNotificationService downloadNotificationService,
   }) : _getServerConfig = getServerConfig,
        _getTorrents = getTorrents,
        _pauseTorrents = pauseTorrents,
        _resumeTorrents = resumeTorrents,
        _deleteTorrents = deleteTorrents,
        _logout = logout,
-       _clearServerConfig = clearServerConfig;
+       _clearServerConfig = clearServerConfig,
+       _downloadNotificationService = downloadNotificationService;
 
   final GetServerConfig _getServerConfig;
   final GetTorrents _getTorrents;
@@ -36,6 +39,7 @@ class TorrentsController extends GetxController {
   final DeleteTorrents _deleteTorrents;
   final Logout _logout;
   final ClearServerConfig _clearServerConfig;
+  final DownloadNotificationService _downloadNotificationService;
 
   final RxList<Torrent> torrents = <Torrent>[].obs;
   final Rx<TorrentFilter> selectedFilter = TorrentFilter.all.obs;
@@ -116,6 +120,7 @@ class TorrentsController extends GetxController {
     try {
       final result = await _getTorrents(selectedFilter.value);
       torrents.assignAll(result);
+      await _downloadNotificationService.syncDownloadNotifications(result);
       errorMessage.value = null;
     } on Failure catch (e) {
       errorMessage.value = e.message;
@@ -255,6 +260,7 @@ class TorrentsController extends GetxController {
   Future<void> disconnect() async {
     await _logout();
     await _clearServerConfig();
+    await _downloadNotificationService.clearAll();
     Get.offAllNamed(AppRoutes.setup);
   }
 

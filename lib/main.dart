@@ -6,6 +6,7 @@ import 'app/bindings/initial_binding.dart';
 import 'app/routes/app_pages.dart';
 import 'app/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
+import 'core/services/download_notification_service.dart';
 import 'presentation/controllers/theme_controller.dart';
 
 Future<void> main() async {
@@ -15,6 +16,9 @@ Future<void> main() async {
     ThemeController(sharedPreferences: Get.find<SharedPreferences>()),
     permanent: true,
   );
+  final downloadNotificationService = DownloadNotificationService();
+  await downloadNotificationService.initialize();
+  Get.put(downloadNotificationService, permanent: true);
   runApp(const QbittorrentApp());
 }
 
