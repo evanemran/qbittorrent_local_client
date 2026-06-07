@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/network/qbittorrent_api_client.dart';
+import '../../core/services/download_notification_service.dart';
 import '../../data/datasources/local/server_config_local_datasource.dart';
 import '../../data/datasources/remote/qbittorrent_remote_datasource.dart';
 import '../../data/repositories/server_config_repository_impl.dart';
@@ -128,6 +129,7 @@ class InitialBinding extends Bindings {
         deleteTorrents: Get.find<DeleteTorrents>(),
         logout: Get.find<Logout>(),
         clearServerConfig: Get.find<ClearServerConfig>(),
+        downloadNotificationService: Get.find<DownloadNotificationService>(),
       ),
       fenix: true,
     );
