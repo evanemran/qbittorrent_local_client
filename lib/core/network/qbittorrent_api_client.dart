@@ -163,21 +163,44 @@ class QbittorrentApiClient {
 
   Future<void> pauseTorrents(List<String> hashes) async {
     if (hashes.isEmpty) return;
-    final response = await _client.post(
-      '$baseUrl/api/v2/torrents/pause',
-      data: {'hashes': hashes.join('|')},
-      options: Options(contentType: Headers.formUrlEncodedContentType),
+    await _postTorrentHashAction(
+      v5Action: 'stop',
+      v4Action: 'pause',
+      hashes: hashes,
     );
-    _ensureSuccess(response);
   }
 
   Future<void> resumeTorrents(List<String> hashes) async {
     if (hashes.isEmpty) return;
-    final response = await _client.post(
-      '$baseUrl/api/v2/torrents/resume',
-      data: {'hashes': hashes.join('|')},
-      options: Options(contentType: Headers.formUrlEncodedContentType),
+    await _postTorrentHashAction(
+      v5Action: 'start',
+      v4Action: 'resume',
+      hashes: hashes,
     );
+  }
+
+  Future<void> _postTorrentHashAction({
+    required String v5Action,
+    required String v4Action,
+    required List<String> hashes,
+  }) async {
+    final data = {'hashes': hashes.join('|')};
+    final options = Options(contentType: Headers.formUrlEncodedContentType);
+
+    var response = await _client.post(
+      '$baseUrl/api/v2/torrents/$v5Action',
+      data: data,
+      options: options,
+    );
+
+    if (response.statusCode == 404) {
+      response = await _client.post(
+        '$baseUrl/api/v2/torrents/$v4Action',
+        data: data,
+        options: options,
+      );
+    }
+
     _ensureSuccess(response);
   }
 

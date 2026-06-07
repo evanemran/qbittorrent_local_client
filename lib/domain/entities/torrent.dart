@@ -30,7 +30,10 @@ class Torrent {
   final int addedOn;
 
   bool get isPaused =>
-      state == 'pausedDL' || state == 'pausedUP' || state == 'stoppedDL';
+      state == 'pausedDL' ||
+      state == 'pausedUP' ||
+      state == 'stoppedDL' ||
+      state == 'stoppedUP';
 
   bool get isSeeding =>
       state == 'uploading' ||
@@ -62,8 +65,10 @@ class Torrent {
       case 'stalledUP':
         return 'Stalled (UL)';
       case 'pausedDL':
+      case 'stoppedDL':
         return 'Paused (DL)';
       case 'pausedUP':
+      case 'stoppedUP':
         return 'Paused (UL)';
       case 'queuedDL':
         return 'Queued (DL)';

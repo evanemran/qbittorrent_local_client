@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../controllers/torrents_controller.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -54,10 +55,8 @@ class AppDrawer extends StatelessWidget {
                         backgroundColor: colorScheme.onPrimary.withValues(
                           alpha: 0.2,
                         ),
-                        child: Icon(
-                          Icons.dns,
-                          size: 32,
-                          color: colorScheme.onPrimary,
+                        backgroundImage: const AssetImage(
+                          AppConstants.appIconAsset,
                         ),
                       ),
                       const SizedBox(height: 12),
