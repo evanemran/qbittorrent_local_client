@@ -46,22 +46,61 @@ class InitialBinding extends Bindings {
       permanent: true,
     );
 
-    Get.lazyPut(() => GetServerConfig(Get.find<ServerConfigRepository>()), fenix: true);
-    Get.lazyPut(() => SaveServerConfig(Get.find<ServerConfigRepository>()), fenix: true);
-    Get.lazyPut(() => ClearServerConfig(Get.find<ServerConfigRepository>()), fenix: true);
+    Get.lazyPut(
+      () => GetServerConfig(Get.find<ServerConfigRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => SaveServerConfig(Get.find<ServerConfigRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => ClearServerConfig(Get.find<ServerConfigRepository>()),
+      fenix: true,
+    );
 
-    Get.lazyPut(() => ConnectAndLogin(Get.find<TorrentRepository>()), fenix: true);
+    Get.lazyPut(
+      () => ConnectAndLogin(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
     Get.lazyPut(() => GetTorrents(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => AddTorrentFromUrl(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => AddTorrentFromFile(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => PauseTorrents(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => ResumeTorrents(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => DeleteTorrents(Get.find<TorrentRepository>()), fenix: true);
+    Get.lazyPut(
+      () => AddTorrentFromUrl(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => AddTorrentFromFile(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => PauseTorrents(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => ResumeTorrents(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => DeleteTorrents(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
     Get.lazyPut(() => Logout(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => GetTorrentProperties(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => GetTorrentFiles(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => GetTorrentTrackers(Get.find<TorrentRepository>()), fenix: true);
-    Get.lazyPut(() => GetTorrentPeers(Get.find<TorrentRepository>()), fenix: true);
+    Get.lazyPut(
+      () => GetTorrentProperties(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetTorrentFiles(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetTorrentTrackers(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetTorrentPeers(Get.find<TorrentRepository>()),
+      fenix: true,
+    );
 
     Get.lazyPut(
       () => SplashController(

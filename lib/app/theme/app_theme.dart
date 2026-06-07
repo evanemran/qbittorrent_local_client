@@ -4,7 +4,7 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get light {
-    const seed = Color(0xFF1976D2);
+    const seed = Color(0xFF2E7D32);
     final colorScheme = ColorScheme.fromSeed(
       seedColor: seed,
       brightness: Brightness.light,
@@ -40,7 +40,7 @@ class AppTheme {
   }
 
   static ThemeData get dark {
-    const seed = Color(0xFF64B5F6);
+    const seed = Color(0xFF66BB6A);
     final colorScheme = ColorScheme.fromSeed(
       seedColor: seed,
       brightness: Brightness.dark,

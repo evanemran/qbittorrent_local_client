@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../../../domain/entities/torrent.dart';
 import '../../../domain/entities/torrent_filter.dart';
 import '../../controllers/torrents_controller.dart';
 import '../../widgets/app_drawer.dart';
@@ -49,6 +50,16 @@ class TorrentsPage extends GetView<TorrentsController> {
                     tooltip: 'Refresh',
                   ),
           ),
+          IconButton(
+            onPressed: controller.resumeAllTorrents,
+            icon: const Icon(Icons.playlist_play),
+            tooltip: 'Resume all torrents',
+          ),
+          IconButton(
+            onPressed: controller.pauseAllTorrents,
+            icon: const Icon(Icons.pause_circle_outline),
+            tooltip: 'Pause all torrents',
+          ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(112),
@@ -67,7 +78,7 @@ class TorrentsPage extends GetView<TorrentsController> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(8,0,8,0),
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: _FilterBar(controller: controller),
               ),
             ],
@@ -142,12 +153,45 @@ class _FilterBar extends StatelessWidget {
     TorrentFilter.paused,
   ];
 
+  int _countForFilter(List<Torrent> torrents, TorrentFilter filter) {
+    if (filter == TorrentFilter.all) return torrents.length;
+    return torrents.where((torrent) => _matchesFilter(torrent, filter)).length;
+  }
+
+  bool _matchesFilter(Torrent torrent, TorrentFilter filter) {
+    switch (filter) {
+      case TorrentFilter.all:
+        return true;
+      case TorrentFilter.downloading:
+        return torrent.isDownloading;
+      case TorrentFilter.seeding:
+        return torrent.isSeeding;
+      case TorrentFilter.stalled:
+        return torrent.state == 'stalledDL' || torrent.state == 'stalledUP';
+      case TorrentFilter.completed:
+        return torrent.progress >= 0.9999;
+      case TorrentFilter.errored:
+        return torrent.hasError;
+      case TorrentFilter.paused:
+        return torrent.state == 'pausedDL' ||
+            torrent.state == 'pausedUP' ||
+            torrent.state == 'stoppedDL' ||
+            torrent.state == 'stoppedUP';
+      case TorrentFilter.stalledDownloading:
+      case TorrentFilter.stalledUploading:
+      case TorrentFilter.active:
+      case TorrentFilter.inactive:
+        return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 44,
       child: Obx(() {
         final selectedFilter = controller.selectedFilter.value;
+        final torrents = controller.torrents;
         return ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -156,8 +200,9 @@ class _FilterBar extends StatelessWidget {
           itemBuilder: (context, index) {
             final filter = _visibleFilters[index];
             final selected = selectedFilter == filter;
+            final count = _countForFilter(torrents, filter);
             return FilterChip(
-              label: Text(filter.label),
+              label: Text('${filter.label}($count)'),
               selected: selected,
               onSelected: (_) => controller.changeFilter(filter),
             );
@@ -195,8 +240,8 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Tap + to add a magnet link or torrent file',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -234,8 +279,8 @@ class _ErrorState extends StatelessWidget {
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),

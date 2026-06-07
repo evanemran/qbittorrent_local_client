@@ -48,10 +48,7 @@ class TorrentListItem extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _StatusChip(
-                    label: torrent.stateLabel,
-                    color: statusColor,
-                  ),
+                  _StatusChip(label: torrent.stateLabel, color: statusColor),
                 ],
               ),
               const SizedBox(height: 12),
@@ -88,10 +85,12 @@ class TorrentListItem extends StatelessWidget {
                   _InfoChip(
                     icon: Icons.arrow_downward,
                     label: Formatters.bytesPerSecond(torrent.dlspeed),
+                    color: Colors.green.shade600,
                   ),
                   _InfoChip(
                     icon: Icons.arrow_upward,
                     label: Formatters.bytesPerSecond(torrent.upspeed),
+                    color: Colors.red.shade600,
                   ),
                   if (torrent.isDownloading)
                     _InfoChip(
@@ -131,7 +130,7 @@ class TorrentListItem extends StatelessWidget {
       case 'queuedUP':
       case 'forcedUP':
       case 'checkingUP':
-        return Colors.amber.shade700;
+        return Colors.orange.shade700;
       case 'downloading':
       case 'metaDL':
       case 'stalledDL':
@@ -140,6 +139,8 @@ class TorrentListItem extends StatelessWidget {
       case 'checkingDL':
       case 'allocating':
       case 'moving':
+      // case 'stalledUP':
+      // case 'queuedUP':
         return Colors.green.shade600;
       default:
         return Colors.green.shade600;
@@ -162,9 +163,7 @@ class TorrentListItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(
-                torrent.isPaused ? Icons.play_arrow : Icons.pause,
-              ),
+              leading: Icon(torrent.isPaused ? Icons.play_arrow : Icons.pause),
               title: Text(torrent.isPaused ? 'Resume' : 'Pause'),
               onTap: () {
                 Navigator.pop(context);
@@ -203,29 +202,36 @@ class _StatusChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 }
 
 class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.label});
+  const _InfoChip({required this.icon, required this.label, this.color});
 
   final IconData icon;
   final String label;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    final contentColor =
+        color ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: color),
+        Icon(icon, size: 14, color: contentColor),
         const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color)),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: contentColor),
+        ),
       ],
     );
   }

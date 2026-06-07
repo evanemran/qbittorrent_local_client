@@ -21,13 +21,13 @@ class TorrentsController extends GetxController {
     required DeleteTorrents deleteTorrents,
     required Logout logout,
     required ClearServerConfig clearServerConfig,
-  })  : _getServerConfig = getServerConfig,
-        _getTorrents = getTorrents,
-        _pauseTorrents = pauseTorrents,
-        _resumeTorrents = resumeTorrents,
-        _deleteTorrents = deleteTorrents,
-        _logout = logout,
-        _clearServerConfig = clearServerConfig;
+  }) : _getServerConfig = getServerConfig,
+       _getTorrents = getTorrents,
+       _pauseTorrents = pauseTorrents,
+       _resumeTorrents = resumeTorrents,
+       _deleteTorrents = deleteTorrents,
+       _logout = logout,
+       _clearServerConfig = clearServerConfig;
 
   final GetServerConfig _getServerConfig;
   final GetTorrents _getTorrents;
@@ -52,10 +52,30 @@ class TorrentsController extends GetxController {
 
   List<Torrent> get filteredTorrents {
     final query = searchQuery.value.trim().toLowerCase();
-    if (query.isEmpty) return torrents;
-    return torrents
-        .where((t) => t.name.toLowerCase().contains(query))
-        .toList();
+    final visibleItems = query.isEmpty
+        ? torrents
+        : torrents.where((t) => t.name.toLowerCase().contains(query));
+    return _withDownloadingFirst(visibleItems);
+  }
+
+  List<Torrent> _withDownloadingFirst(Iterable<Torrent> items) {
+    final downloading = <Torrent>[];
+    final others = <Torrent>[];
+    for (final torrent in items) {
+      if (_isCurrentlyDownloading(torrent)) {
+        downloading.add(torrent);
+      } else {
+        others.add(torrent);
+      }
+    }
+    return [...downloading, ...others];
+  }
+
+  bool _isCurrentlyDownloading(Torrent torrent) {
+    if (torrent.dlspeed > 0) return true;
+    return torrent.state == 'downloading' ||
+        torrent.state == 'metaDL' ||
+        torrent.state == 'forcedDL';
   }
 
   @override
@@ -125,6 +145,70 @@ class TorrentsController extends GetxController {
     }
   }
 
+  Future<void> resumeAllTorrents() async {
+    if (torrents.isEmpty) {
+      Get.snackbar('Nothing to resume', 'No torrents available');
+      return;
+    }
+
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Resume all torrents'),
+        content: const Text('Are you sure you want to resume all torrents?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Resume all'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await _resumeTorrents(torrents.map((torrent) => torrent.hash).toList());
+      await refreshTorrents();
+    } on Failure catch (e) {
+      Get.snackbar('Resume failed', e.message);
+    }
+  }
+
+  Future<void> pauseAllTorrents() async {
+    if (torrents.isEmpty) {
+      Get.snackbar('Nothing to pause', 'No torrents available');
+      return;
+    }
+
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Pause all torrents'),
+        content: const Text('Are you sure you want to pause all torrents?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Pause all'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await _pauseTorrents(torrents.map((torrent) => torrent.hash).toList());
+      await refreshTorrents();
+    } on Failure catch (e) {
+      Get.snackbar('Pause failed', e.message);
+    }
+  }
+
   Future<void> deleteTorrent(Torrent torrent) async {
     final deleteFiles = await Get.dialog<bool?>(
       AlertDialog(
@@ -150,10 +234,7 @@ class TorrentsController extends GetxController {
     if (deleteFiles == false) return;
 
     try {
-      await _deleteTorrents(
-        [torrent.hash],
-        deleteFiles: deleteFiles == null,
-      );
+      await _deleteTorrents([torrent.hash], deleteFiles: deleteFiles == null);
       await refreshTorrents();
     } on Failure catch (e) {
       Get.snackbar('Delete failed', e.message);
@@ -167,7 +248,7 @@ class TorrentsController extends GetxController {
   }
 
   Future<void> goToSettings() async {
-    await Get.toNamed(AppRoutes.setup);
+    await Get.toNamed(AppRoutes.settings);
     await _loadServerInfo();
   }
 

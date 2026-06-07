@@ -40,10 +40,7 @@ class AppDrawer extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      colorScheme.primary,
-                      colorScheme.primaryContainer,
-                    ],
+                    colors: [colorScheme.primaryFixedDim, colorScheme.primaryFixedDim],
                   ),
                 ),
                 child: Padding(
@@ -54,8 +51,9 @@ class AppDrawer extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 28,
-                        backgroundColor:
-                            colorScheme.onPrimary.withValues(alpha: 0.2),
+                        backgroundColor: colorScheme.onPrimary.withValues(
+                          alpha: 0.2,
+                        ),
                         child: Icon(
                           Icons.dns,
                           size: 32,
@@ -106,8 +104,8 @@ class AppDrawer extends StatelessWidget {
             );
           }),
           ListTile(
-            leading: const Icon(Icons.home_outlined),
-            title: const Text('Home'),
+            leading: const Icon(Icons.home_max),
+            title: const Text('Torrents'),
             selected: true,
             onTap: () {
               Navigator.pop(context);
@@ -126,10 +124,7 @@ class AppDrawer extends StatelessWidget {
           const Divider(height: 1),
           ListTile(
             leading: Icon(Icons.logout, color: colorScheme.error),
-            title: Text(
-              'Logout',
-              style: TextStyle(color: colorScheme.error),
-            ),
+            title: Text('Logout', style: TextStyle(color: colorScheme.error)),
             onTap: () {
               Navigator.pop(context);
               controller.disconnect();

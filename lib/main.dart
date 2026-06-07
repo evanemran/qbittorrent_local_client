@@ -6,10 +6,15 @@ import 'app/bindings/initial_binding.dart';
 import 'app/routes/app_pages.dart';
 import 'app/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
+import 'presentation/controllers/theme_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Get.putAsync<SharedPreferences>(SharedPreferences.getInstance);
+  Get.put(
+    ThemeController(sharedPreferences: Get.find<SharedPreferences>()),
+    permanent: true,
+  );
   runApp(const QbittorrentApp());
 }
 
@@ -18,15 +23,18 @@ class QbittorrentApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      initialBinding: InitialBinding(),
-      initialRoute: AppPages.initial,
-      getPages: AppPages.routes,
+    final themeController = Get.find<ThemeController>();
+    return Obx(
+      () => GetMaterialApp(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: themeController.themeMode.value,
+        initialBinding: InitialBinding(),
+        initialRoute: AppPages.initial,
+        getPages: AppPages.routes,
+      ),
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../../presentation/controllers/torrent_details_controller.dart';
 import '../../domain/usecases/torrent_usecases.dart';
 import '../../presentation/pages/add_torrent/add_torrent_page.dart';
+import '../../presentation/pages/settings/settings_page.dart';
+import '../../presentation/pages/settings/theme_settings_page.dart';
 import '../../presentation/pages/setup/setup_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/torrent_details/torrent_details_page.dart';
@@ -15,22 +17,15 @@ class AppPages {
   static const initial = AppRoutes.splash;
 
   static final routes = [
+    GetPage(name: AppRoutes.splash, page: () => const SplashPage()),
+    GetPage(name: AppRoutes.setup, page: () => const SetupPage()),
+    GetPage(name: AppRoutes.settings, page: () => const SettingsPage()),
     GetPage(
-      name: AppRoutes.splash,
-      page: () => const SplashPage(),
+      name: AppRoutes.themeSettings,
+      page: () => const ThemeSettingsPage(),
     ),
-    GetPage(
-      name: AppRoutes.setup,
-      page: () => const SetupPage(),
-    ),
-    GetPage(
-      name: AppRoutes.torrents,
-      page: () => const TorrentsPage(),
-    ),
-    GetPage(
-      name: AppRoutes.addTorrent,
-      page: () => const AddTorrentPage(),
-    ),
+    GetPage(name: AppRoutes.torrents, page: () => const TorrentsPage()),
+    GetPage(name: AppRoutes.addTorrent, page: () => const AddTorrentPage()),
     GetPage(
       name: AppRoutes.torrentDetails,
       page: () => const TorrentDetailsPage(),
